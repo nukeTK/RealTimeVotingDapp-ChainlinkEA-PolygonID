@@ -7,9 +7,9 @@ import "./verifiers/ZKPVerifier.sol";
 
 contract AgeVerification is ZKPVerifier {
     uint64 public constant TRANSFER_REQUEST_ID = 1;
-
-    mapping(address => bool) public isVoted;
-    mapping(uint256 => address) public checkVoted;
+    
+    mapping(uint256 => address) public checkID;
+    mapping(address => uint256) public checkAddress;
 
     function _beforeProofSubmit(
         uint64, /* requestId */
@@ -32,26 +32,15 @@ contract AgeVerification is ZKPVerifier {
         ICircuitValidator validator
     ) internal override {
         require(
-            requestId == TRANSFER_REQUEST_ID && addressToId[_msgSender()] == 0,
+            requestId == TRANSFER_REQUEST_ID && checkAddress[_msgSender()] == 0,
             "proof can not be submitted more than once"
         );
 
         uint256 id = inputs[validator.getChallengeInputIndex()];
         // Execute function for voting
-        if (checkVoted[id] == address(0)) {
-            isVoted[_msg.sender()] = true;
-            checkVoted[id] = _msgSender();
+        if (checkID[id] == address(0)) {
+            checkAddress[_msgSender()] = id;
+            checkID[id] = _msgSender();
         }
-    }
-
-    function _beforeTokenTransfer(
-        address, /* from */
-        address to,
-        uint256 /* amount */
-    ) internal view override {
-        require(
-            proofs[to][TRANSFER_REQUEST_ID] == true,
-            "only identities who provided proof are allowed to Vote"
-        );
     }
 }
