@@ -11,9 +11,9 @@ contract Counsumer is ChainlinkClient, ConfirmedOwner {
     uint256 private constant ORACLE_PAYMENT = 1 * 10**17; //How much cost for per API call 
     string public lastRetrivedData;
 
-    constructor() ConfirmedOwner(msg.sender) {
-        setChainlinkToken(0x326C977E6efc84E512bB9C30f76E30c160eD06FB); //Link Token Address 
-        setChainlinkOracle(address(0)); //Deployed Oracle or Operator contract address
+    constructor(address _token, address _operator) ConfirmedOwner(msg.sender) {
+        setChainlinkToken(_token); //Link Token Address 
+        setChainlinkOracle(_operator); //Deployed Oracle or Operator contract address
     }
 
 
